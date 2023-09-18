@@ -1,5 +1,5 @@
 locals {
-  location    = "westeurope"
+  location    = "eastus"
   environment = "dev"
 
   ai_subscription           = var.ai_subscription
@@ -9,14 +9,14 @@ locals {
     cognitive_service = {
       create_new_resource_group = false
 
-      existing_resource_group_name     = "rg-cognitive-services" # Leave this empty since we are creating a new resource group
+      existing_resource_group_name     = "rg-cognitive-services" 
       existing_resource_group_location = local.location
     }
 
     cognitive_search = {
       create_new_resource_group = false
 
-      existing_resource_group_name     = "rg-cognitive-services" # Leave this empty since we are creating a new resource group
+      existing_resource_group_name     = "rg-cognitive-services" 
       existing_resource_group_location = local.location
       sku                              = "standard"
       replica_count                    = 2
@@ -24,7 +24,7 @@ locals {
     }
 
     open_ai = {
-      resource_group_name = "my-resource-group"
+      resource_group_name = "rg-open-ai"
       identity={
         type="SystemAssigned"
         
@@ -32,9 +32,9 @@ locals {
       private_endpoint = {
 
         "pe_endpoint" = {
-          private_dns_entry_enabled         = true
-          link_dns_zone_virtual_network     = true
-          link_dns_zone_virtual_network_hub = true
+          private_dns_entry_enabled         = false
+          link_dns_zone_virtual_network     = false
+          link_dns_zone_virtual_network_hub = false
           virtual_network_hub_id            = local.hub_vnet_id
           is_manual_connection              = false
           name                              = "pe_one"
@@ -46,11 +46,11 @@ locals {
       }
 
       deployment = {
-        "gpt-35-turbo" = {
-          name          = "gpt-35-turbo2"
+        "gpt-35-turbo-16k" = {
+          name          = "gpt-35-turbo-16k"
           model_format  = "OpenAI"
-          model_name    = "gpt-35-turbo"
-          model_version = "0301"
+          model_name    = "gpt-35-turbo-16k"
+          model_version = "0613"
           scale_type    = "Standard"
         }
       }
@@ -68,7 +68,7 @@ locals {
   Network = {
 
     hub_nva_static_ip = "10.100.0.4"
-    hub_vnet_name     = "es-hub-westeurope"
+    hub_vnet_name     = "es-hub-eastus"
 
     hub_values = split("/", local.hub_vnet_id)
 
@@ -81,20 +81,20 @@ locals {
       snet_services_address_prefixes  = ["10.52.0.0/23"]
       snet_services_service_endpoints = ["Microsoft.KeyVault"]
 
-      snet_web_address_prefixes  = ["10.52.2.0/23"]
-      snet_web_service_endpoints = ["Microsoft.EventHub", "Microsoft.KeyVault", "Microsoft.ServiceBus", "Microsoft.Sql", "Microsoft.Storage"]
-
       snet_database_address_prefixes  = ["10.52.4.0/22"]
       snet_database_service_endpoints = []
 
-      snet_ai_address_prefixes  = ["10.52.8.0/21"]
+      snet_ai_address_prefixes  = ["10.52.8.0/23"]
       snet_ai_service_endpoints = ["Microsoft.CognitiveServices"]
 
-      snet_ag_address_prefixes  = ["10.52.16.0/23"]
+      snet_ag_address_prefixes  = ["10.52.12.0/22"]
       snet_ag_service_endpoints = []
 
-      snet_chatgpt_address_prefixes  = ["10.52.18.0/23"]
-      snet_chatgpt_service_endpoints = []
+      snet_web_address_prefixes  = ["10.52.32.0/20"]
+      snet_web_service_endpoints = []
+
+      snet_apim_address_prefixes  = ["10.52.20.0/22"]
+      snet_apim_service_endpoints = []
 
 
 

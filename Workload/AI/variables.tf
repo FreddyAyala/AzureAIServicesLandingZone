@@ -8,3 +8,7 @@ variable "ai_subscription" {
 variable "hub_vnet_id" {
   
 }
+
+variable "hub_dns_servers" {
+  
+}

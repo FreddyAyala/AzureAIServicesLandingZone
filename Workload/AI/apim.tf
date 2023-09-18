@@ -8,10 +8,17 @@ resource "azurerm_resource_group" "apim" {
 
 output "test" {
   description = "The endpoint used to connect to the Cognitive Service Account."
-  value       = lookup(module.vnet_ai.vnet_subnets_name_id, "snet_web")
+  value       = lookup(module.vnet_ai.vnet_subnets_name_id, "snet_apim")
 }
+
+resource "random_pet" "funny_name" {
+  length    = 2
+  separator = "-"
+}
+
+
 resource "azurerm_api_management" "example" {
-  name                = "apim-ai-services"
+  name                = "apim-${random_pet.funny_name.id}"
   location            = local.location
   resource_group_name = azurerm_resource_group.apim.name
   publisher_name      = "My Company"
@@ -22,7 +29,7 @@ resource "azurerm_api_management" "example" {
   virtual_network_type = "Internal"
 
   virtual_network_configuration {
-    subnet_id = lookup(module.vnet_ai.vnet_subnets_name_id, "snet_web")
+    subnet_id = lookup(module.vnet_ai.vnet_subnets_name_id, "snet_apim")
   }
 
   identity {
@@ -80,4 +87,12 @@ resource "azurerm_private_dns_a_record" "private_dns_a_record" {
   resource_group_name = azurerm_resource_group.apim.name
   ttl                 = 300
   records             = [azurerm_api_management.example.private_ip_addresses[0]]
+}
+
+# Identity
+
+resource "azurerm_role_assignment" "apim_to_openai" {
+  principal_id   = azurerm_api_management.example.identity[0].principal_id
+  role_definition_name = "Cognitive Services OpenAI User"
+  scope         = module.openai.openai_id 
 }

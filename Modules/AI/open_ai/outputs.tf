@@ -13,6 +13,12 @@ output "openai_name" {
   value       = azurerm_cognitive_account.this.name
 }
 
+output "openai_id" {
+  description = "The open ai resource id"
+  value       = azurerm_cognitive_account.this.id
+}
+
+
 output "openai_primary_key" {
   description = "The primary access key for the Cognitive Service Account."
   sensitive   = true

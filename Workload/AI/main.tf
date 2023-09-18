@@ -13,10 +13,5 @@ provider "azurerm" {
   subscription_id = local.ai_subscription
 }
 
-provider "azurerm" {
-  alias           = "connectivity"  
-  subscription_id = local.connectivity_subscription
-  features {}
-}
 
 

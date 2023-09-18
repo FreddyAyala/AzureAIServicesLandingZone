@@ -1,8 +1,8 @@
 # Configure the connectivity resources settings.
 locals {
-  location                  = "westeurope"
+  location                  = var.location
   environment               = "dev"
-  connectivity_subscription = "8dfc81b4-9732-4b10-88ad-07cf9a644863"
+  connectivity_subscription = var.connectivity_subscription
 
   configure_connectivity_resources = {
     settings = {
@@ -12,16 +12,18 @@ locals {
           config = {
             address_space                = ["10.100.0.0/16", ]
             location                     = local.location
+            resource_group_name          = "es-connectivity-eastus"
             link_to_ddos_protection_plan = false
             dns_servers                  = []
             bgp_community                = ""
-            subnets = [{
-              name = "AzureBastionSubnet"
-              address_prefixes = [
-                "10.100.1.0/26"
-              ]
-              network_security_group_id = ""
-              route_table_id            = ""
+            subnets = [
+              {
+                name = "AzureBastionSubnet"
+                address_prefixes = [
+                  "10.100.1.0/26"
+                ]
+                network_security_group_id = ""
+                route_table_id            = ""
               },
               {
                 name = "SharedServicesSubnet"
@@ -30,7 +32,42 @@ locals {
                 ]
                 network_security_group_id = ""
                 route_table_id            = ""
-              }
+              },
+              {
+                name = "inboundsubnetdns"
+                address_prefixes = [
+                  "10.100.1.128/26"
+                ]
+                network_security_group_id = ""
+                route_table_id            = ""
+                delegation = {
+                  name = "dnsdelegation"
+                  service_delegation = {
+                    name = "Microsoft.Network.dnsResolvers"
+                    actions = [
+                      "Microsoft.Network/virtualNetworks/subnets/join/action"
+                    ]
+                  }
+                }
+              },
+              {
+                name = "outboundsubnetdns"
+                address_prefixes = [
+                  "10.100.1.192/26"
+                ]
+                network_security_group_id = ""
+                route_table_id            = ""
+                delegation = {
+                  name = "dnsdelegation"
+                  service_delegation = {
+                    name = "Microsoft.Network.dnsResolvers"
+                    actions = [
+                      "Microsoft.Network/virtualNetworks/subnets/join/action"
+                    ]
+                  }
+                }
+              },
+
             ]
             virtual_network_gateway = {
               enabled = false
@@ -62,12 +99,12 @@ locals {
                 threat_intelligence_allowlist = []
                 availability_zones = {
                   zone_1 = true
-                  zone_2 = true
-                  zone_3 = true
+                  zone_2 = false
+                  zone_3 = false
                 }
               }
             }
-            spoke_virtual_network_resource_ids      = []
+            spoke_virtual_network_resource_ids      = ["/subscriptions/dbc37ac5-188c-42aa-9b19-f5a7a62236a6/resourceGroups/rg-network/providers/Microsoft.Network/virtualNetworks/vnet-ai-lz"]
             enable_outbound_virtual_network_peering = true
             enable_hub_network_mesh_peering         = false
           }
@@ -135,8 +172,9 @@ locals {
             storage_account_queue                = true
             storage_account_table                = true
             storage_account_web                  = true*/
-            azure_key_vault = true
-            azure_open_ai   = true
+            cognitive_services_account = false
+            azure_key_vault            = true
+            //azure_open_ai   = true
           }
           private_link_locations = [
             local.location
@@ -150,8 +188,54 @@ locals {
       }
     }
 
+    advanced = {
+      custom_settings_by_resource_type = {
+        azurerm_subnet = {
+          connectivity = {
+            eastus = {             # replace eastus with the location you are using
+              inboundsubnetdns = { # replace subnet_name with the name of the subnet you want to configure and repeat this block for each subnet you need to configure
+
+                delegation = [ # add multiple entries to this list if multiple delegations are needed
+                  {
+                    name = "Microsoft.Network.dnsResolvers"
+                    service_delegation = [
+                      {
+                        name    = "Microsoft.Network/dnsResolvers"
+                        actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+                      }
+                    ]
+                  }
+                ]
+
+              }
+
+              outboundsubnetdns = { # replace subnet_name with the name of the subnet you want to configure and repeat this block for each subnet you need to configure
+
+                delegation = [ # add multiple entries to this list if multiple delegations are needed
+                  {
+                    name = "Microsoft.Network.dnsResolvers"
+                    service_delegation = [
+                      {
+                        name    = "Microsoft.Network/dnsResolvers"
+                        actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+                      }
+                    ]
+                  }
+                ]
+
+              }
+
+            }
+          }
+        }
+      }
+    }
+
+
+
+
     location = local.location
     tags     = var.connectivity_resources_tags
-    advanced = null
+
   }
 }

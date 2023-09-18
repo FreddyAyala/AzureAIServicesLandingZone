@@ -43,12 +43,12 @@ module "openai" {
   location            = local.location
   private_endpoint    = local.AI.open_ai.private_endpoint
   deployment          = local.AI.open_ai.deployment
-  outbound_network_access_restricted=true
+  public_network_access_enabled =false
   sku_name ="S0"
 
   providers = {
     azurerm              = azurerm
-    azurerm.connectivity = azurerm.connectivity
+    azurerm.connectivity = azurerm
   }
   depends_on = [
     module.vnet_ai,

@@ -2,37 +2,36 @@
 
 resource "azurerm_public_ip" "lz-pip-bastion" {
   name                = "lz-pip-bastion"
-  location            = local.location
+  location            = var.location
   resource_group_name = values(values(module.enterprise_scale.azurerm_firewall)[0])[0].resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
+
+  
 }
 
 resource "azurerm_bastion_host" "lz-bastion-host" {
   name                = "lz-bastion-host"
-  location            = local.location
+  location            = var.location
   resource_group_name = values(values(module.enterprise_scale.azurerm_firewall)[0])[0].resource_group_name
 
 
   ip_configuration {
     name                 = "configuration"
-    subnet_id            = data.azurerm_subnet.Bastion_subnet.id
+    subnet_id            = values(values(module.enterprise_scale.azurerm_subnet.connectivity)[0])[4]
     public_ip_address_id = azurerm_public_ip.lz-pip-bastion.id
   }
+
+  depends_on=["module.enterprise_scale"]
 }
 
-data "azurerm_subnet" "Bastion_subnet" {
-  name                 = "AzureBastionSubnet"
-  virtual_network_name = values(values(module.enterprise_scale.azurerm_virtual_network)[0])[0].name
-  resource_group_name  = values(values(module.enterprise_scale.azurerm_firewall)[0])[0].resource_group_name
 
-}
 
 
 resource "azurerm_network_security_group" "bastion-nsg" {
   name                = "lz-nsg-hub-bastion"
   resource_group_name = values(values(module.enterprise_scale.azurerm_firewall)[0])[0].resource_group_name
-  location            = local.location
+  location            = var.location
   security_rule {
     name                       = "GatewayManager"
     priority                   = 1001
@@ -93,10 +92,12 @@ resource "azurerm_network_security_group" "bastion-nsg" {
     source_address_prefix      = "*"
     destination_address_prefixes = var.local_gateway_address_space
   }*/
+  
 }
 
 resource "azurerm_subnet_network_security_group_association" "example" {
-  subnet_id                 = data.azurerm_subnet.Bastion_subnet.id
+  subnet_id                 = values(values(module.enterprise_scale.azurerm_subnet.connectivity)[0])[4]
   network_security_group_id = azurerm_network_security_group.bastion-nsg.id
+  
 }
 

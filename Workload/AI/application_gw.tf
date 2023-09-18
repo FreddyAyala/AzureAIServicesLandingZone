@@ -13,7 +13,7 @@ resource "azurerm_application_gateway" "appgateway" {
   sku {
     name     = "WAF_v2"
     tier     = "WAF_v2"
-    capacity = 2
+    capacity = 1
   }
   gateway_ip_configuration {
     name      = "my-gateway-ip-config"
