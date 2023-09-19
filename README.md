@@ -147,7 +147,7 @@ email_security_contact    = "freddyayala@toto.com"
 log_retention_in_days     = 30
 management_resources_tags = {}
 scope_management_group    = "contoso corp"
-spoke_peerigns =["/subscriptions/abc37ac5-188c-42aa-9b19-f5a7a62236a6/resourceGroups/rg-network/providers/Microsoft.Network/virtualNetworks/vnet-ai-lz"]
+spoke_peerigns =["/subscriptions/abc37ac5-188c-42aa-9b19-f5a7a62236a6/resourceGroups/rg-network/providers/Microsoft.Network/virtualNetworks/vnet-ai-lz"] #Update this after deploying Spoke and then redeploy LZ
   ```
 
 ### 2. Initialize and Preview the Deployment
@@ -173,56 +173,114 @@ spoke_peerigns =["/subscriptions/abc37ac5-188c-42aa-9b19-f5a7a62236a6/resourceGr
 ```
   connectivity_subscription = "adfc81b4-9732-4b10-88ad-07cf9a644863"
   ai_subscription           = "abc37ac5-188c-42aa-9b19-f5a7a62236a6"
-  hub_vnet_id = "/subscriptions/adfc81b4-9732-4b10-88ad-07cf9a644863/resourceGroups/es-connectivity-eastus/providers/Microsoft.Network/virtualNetworks/es-hub-eastus"
+  hub_vnet_id = "/subscriptions/adfc81b4-9732-4b10-88ad-07cf9a644863/resourceGroups/es-connectivity-eastus/providers/Microsoft.Network/virtualNetworks/es-hub-eastus" 
   hub_dns_servers =["10.100.1.132","168.63.129.16"]
   open_ai_private_dns_zone_id="/subscriptions/adfc81b4-9732-4b10-88ad-07cf9a644863/resourceGroups/es-dns/providers/Microsoft.Network/privateDnsZones/privatelink.openai.azure.com"
   app_service_private_dns_zone_id="/subscriptions/adfc81b4-9732-4b10-88ad-07cf9a644863/resourceGroups/es-dns/providers/Microsoft.Network/privateDnsZones/privatelink.azurewebsites.net"
 ```
 
-### 5. Configure APIM
+### 4. Deploy Azure Chat Web App and configure it
 
-*   Use the provided policy in the README to test OpenAI API behind APIM.
-*   Replace `<Your OpenAI API Key>` and `<Your OpenAI Backend Service>` with your actual API key and backend service URL.
-<!--
-    IMPORTANT:
-    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.
-    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.
-    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.
-    - To add a policy, place the cursor at the desired insertion point and select a policy from the sidebar.
-    - To remove a policy, delete the corresponding policy statement from the policy document.
-    - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.
-    - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.
-    - Policies are applied in the order of their appearance, from the top down.
-    - Comments within policy elements are not supported and may disappear. Place your comments between policy elements or at a higher level scope.
--->
-<policies>
-    <inbound>
-        <base />
-        <set-header name="api-key" exists-action="override">
-            <value> <!-- Add Your OpenAI API Key --></></value>
-        </set-header>
-        <set-header name="Content-Type" exists-action="override">
-            <value>application/json</value>
-        </set-header>
-        <rewrite-uri template="/openai/deployments/gpt-35-turbo/completions?api-version=2023-05-15" />
-        <set-backend-service base-url="https://<!-- Your OpenAI Backend Service -->.privatelink.openai.azure.com" />
-    </inbound>
-    <backend>
-        <forward-request timeout="5" />
-    </backend>
-    <outbound>
-        <!-- Add a policy to capture and return the full response -->
-        <base />
-        <return-response>
-            <set-status code="200" />
-            <set-header name="Content-Type" exists-action="override">
-                <value>application/json</value>
-            </set-header>
-            <set-body>@(context.Response.Body.As<string>())</set-body>
-        </return-response>
-    </outbound>
-    <on-error />
-</policies>
+* You can fork this web app: https://github.com/FreddyAyala/azurechat and then using a similar github action you can deploy your webapp to the app service, be aware that for deployment you may need to temporarily allow public access to your web app, you can do this in the network tab of the deployed app service.
+   '''
+  name: Build & deploy Next.js app to Azure Web App
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: [main]
+
+  # Allow manual workflow trigger
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🌱 Checkout to the branch
+        uses: actions/checkout@v3
+
+      - name: 🍏 Set up Node.js version
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+
+      - name: ⚙️ npm install and build
+        run: |
+          cd ./src
+          npm install
+          npm run build --if-present
+          cd ..
+
+      - name: 📂 Copy standalone into the root
+        run: cp -R ./src/.next/standalone ./site-deploy
+
+      - name: 📂 Copy static into the .next folder
+        run: cp -R ./src/.next/static ./site-deploy/.next/static
+
+      - name: 📂 Copy Public folder
+        run: cp -R ./src/public ./site-deploy/public
+
+      - name: 📦 Package Next application
+        run: |
+          cd ./site-deploy
+          zip Nextjs-site.zip ./* .next -qr      
+          
+      - name: 🔍 Diagnostics
+        run: |
+          ls ./src
+          ls ./src/.next
+          ls ./site-deploy
+
+      - name: ⬆️ Publish Next Application artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Nextjs-site
+          path: ./site-deploy/Nextjs-site.zip
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: "Production"
+
+    steps:
+      - name: ⬇️ Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: Nextjs-site
+          
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name:  ${{ secrets.AZURE_APP_SERVICE_NAME }}
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_23E8392FBE5D4E6C9F9EF01719160D0F }}
+          package: ${{ github.workspace }}/Nextjs-site.zip
+
+      - name: 🧹 Cleanup
+        run: rm ${{ github.workspace }}/Nextjs-site.zip
+'''
+
+* Deploy this using the azure app service deployment center
+* Create an OAUTH App in github => https://github.com/settings/developers, you will have to note down the ClientID and create a Client secret.
+* In this OAuth app also configure the redirection URL of your application, if you want to test it from the bastion and private app, use the fqdn of the app service, otherwise for public access use the public IP of the APP GW. 
+* Then in the appp service update the following variables:
+
+  '''
+  AZURE_OPENAI_API_INSTANCE_NAME   = "azure-openai-582219"
+  AZURE_OPENAI_API_KEY             = "your_key"
+  AUTH_GITHUB_ID ="your_ids"
+  AUTH_GITHUB_SECRET="your_secret"
+  '''
+
+ * Other values should be populated.
+Once you have done that you can test your application by authentication using github.
+
+
 ## What's Included
 
 This repository contains Terraform configurations and settings to deploy the following components:
@@ -230,6 +288,7 @@ This repository contains Terraform configurations and settings to deploy the fol
 *   Connectivity Components:
     *   Azure Virtual Networks (Hub) for secure connectivity to on-premises systems and other spoke networks.
     *   Azure Firewall, a network-based, stateful firewall to control and inspect traffic flow in and out of the hub.
+    *   Private DNS Zones  and  Private DNS Resolverfor name resolution within the virtual network and between VNets.
     *   Bastion, a secure remote desktop access solution for VMs in the virtual network.
     *   Jumpbox, a secure jump host to access VMs in private subnets.
 
@@ -239,8 +298,7 @@ This repository contains Terraform configurations and settings to deploy the fol
     *   Subnets within spokes to isolate different components.
     *   Route Tables for controlling traffic flow within virtual networks.
     *   Application Gateway, a load balancer for secure access to web applications and AI services.
-    *   Azure API Management as the API gateway for managing and securing APIs, including Azure Open AI.
-    *   Private DNS Zones for name resolution within the virtual network and between VNets.
+    *   Azure API Management as the API gateway for managing and securing APIs, including Azure Open AI (Work in progress).      
     *   Cosmos DB, a globally distributed, multi-model database service to support AI applications.
     *   Web applications in Azure Web App.
     *   Azure AI services for building intelligent applications.
