@@ -284,7 +284,7 @@ jobs:
  * Other values should be populated.
 Once you have done that you can test your application by authentication using github.
 
-
+![Chat Web App](ChatWebApp.png "Chat Web App")
 ## What's Included
 
 This repository contains Terraform configurations and settings to deploy the following components:
