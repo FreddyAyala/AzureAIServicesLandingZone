@@ -135,6 +135,21 @@ To deploy the Azure AI Landing Zone with Terraform, follow the steps below:
 *   Modify settings in the file `/Landing_Zone/settings.connectivity.tf` based on your requirements.
 *   Authenticate to Azure using `az login`.
 
+  Example terraform.tfvars
+
+  ```
+connectivity_subscription = "adfc81b4-9732-4b10-88ad-07cf9a644863"
+management_subscription   = "afe15bcc-5275-4922-8181-217ee69e0e9b"
+identity_subscription     = "acbe85ef-65aa-4539-a13c-4476f32f9610"
+ai_lz_subscription        = "abc37ac5-188c-42aa-9b19-f5a7a62236a6"
+location                  = "eastus"
+email_security_contact    = "freddyayala@toto.com"
+log_retention_in_days     = 30
+management_resources_tags = {}
+scope_management_group    = "contoso corp"
+spoke_peerigns =["/subscriptions/abc37ac5-188c-42aa-9b19-f5a7a62236a6/resourceGroups/rg-network/providers/Microsoft.Network/virtualNetworks/vnet-ai-lz"]
+  ```
+
 ### 2. Initialize and Preview the Deployment
 
 *   Open your command line interface application and navigate to the `/Landing_Zone` folder.
@@ -145,6 +160,7 @@ To deploy the Azure AI Landing Zone with Terraform, follow the steps below:
 
 *   Execute `terraform apply -var-file="terraform.tfvars"` to deploy the connectivity infrastructure for the landing zone.
 
+
 ### 4. Deploy AI Workloads
 
 *   Navigate to the `/Workload/AI` folder.
@@ -152,6 +168,16 @@ To deploy the Azure AI Landing Zone with Terraform, follow the steps below:
 *   Replace `<your connectivity subscription>` and `<your AI subscription>` with your respective subscription IDs.
 *   Copy the ID of your hub VNet deployed during the landing zone and paste it in the `hub_vnet_id` field.
 *   Follow the same steps as above to deploy the AI workloads.
+
+  Example terraform.tfvars:
+```
+  connectivity_subscription = "adfc81b4-9732-4b10-88ad-07cf9a644863"
+  ai_subscription           = "abc37ac5-188c-42aa-9b19-f5a7a62236a6"
+  hub_vnet_id = "/subscriptions/adfc81b4-9732-4b10-88ad-07cf9a644863/resourceGroups/es-connectivity-eastus/providers/Microsoft.Network/virtualNetworks/es-hub-eastus"
+  hub_dns_servers =["10.100.1.132","168.63.129.16"]
+  open_ai_private_dns_zone_id="/subscriptions/adfc81b4-9732-4b10-88ad-07cf9a644863/resourceGroups/es-dns/providers/Microsoft.Network/privateDnsZones/privatelink.openai.azure.com"
+  app_service_private_dns_zone_id="/subscriptions/adfc81b4-9732-4b10-88ad-07cf9a644863/resourceGroups/es-dns/providers/Microsoft.Network/privateDnsZones/privatelink.azurewebsites.net"
+```
 
 ### 5. Configure APIM
 
