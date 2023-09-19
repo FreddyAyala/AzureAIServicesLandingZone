@@ -12,6 +12,8 @@ This GitHub repository provides a comprehensive guide and Terraform configuratio
 
 ### Scenario: Secure Communication to Azure App Service via Private Link
 
+![Azure AI Landing Zone](AILZScenario1.png "Azure AI Landing Zone")
+
 In this scenario, the user deploys a standard landing zone architecture to ensure a well-organized and secure Azure environment. The architecture includes the following components and steps:
 
 * Standard Landing Zone: The deployment begins with setting up a standard Azure Landing Zone. This Landing Zone follows best practices and guidelines for organizing resources and aligning with security and compliance standards.
@@ -27,6 +29,8 @@ In this scenario, the user deploys a standard landing zone architecture to ensur
 * Overall, this architecture scenario emphasizes security and isolation by utilizing private endpoints, restricting access to internal networks, and carefully managing communication between the Azure App Service and Azure OpenAI. It allows users to securely access the web application within the Azure network while ensuring that external connections are controlled and protected.
 
 ### Scenario: Securely Exposing the Application with Application Gateway and WAF
+
+![Azure AI Landing Zone](AILZScenario2.png "Azure AI Landing Zone")
 
 In this scenario, you build upon the architecture from the first scenario to securely expose your application to external users. The key components and steps are as follows:
 
