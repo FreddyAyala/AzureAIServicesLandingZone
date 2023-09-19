@@ -2,10 +2,12 @@ resource "azurerm_resource_group" "cosmosdb" {
   name     = "rg-azure-chatgpt-cosmosdb"
   location = local.location
 }
-
+resource "random_pet" "random_name" {
+  length = 2
+}
 resource "azurerm_cosmosdb_account" "example" {
-  name                      = "cosmosdb-azure-chatgpt"
-  location                  =local.location
+  name                      = "cosmosdb-${random_pet.random_name.id}"
+  location                  = local.location
   resource_group_name       = azurerm_resource_group.cosmosdb.name
   offer_type                = "Standard"
   kind                      = "GlobalDocumentDB"

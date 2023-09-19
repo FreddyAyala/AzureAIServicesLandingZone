@@ -1,6 +1,6 @@
 locals {
-  location    = "eastus"
-  environment = "dev"
+  location    = var.location
+  environment = var.environment
 
   ai_subscription           = var.ai_subscription
   connectivity_subscription = var.connectivity_subscription

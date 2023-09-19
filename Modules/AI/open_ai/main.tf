@@ -24,7 +24,7 @@ resource "azurerm_cognitive_account" "this" {
   local_auth_enabled                 = var.local_auth_enabled
   outbound_network_access_restricted = var.outbound_network_access_restricted
   public_network_access_enabled      = var.public_network_access_enabled
-  tags = local.tags
+  tags                               = local.tags
 
   dynamic "customer_managed_key" {
     for_each = var.customer_managed_key != null ? [var.customer_managed_key] : []
@@ -40,21 +40,23 @@ resource "azurerm_cognitive_account" "this" {
       identity_ids = identity.value.identity_ids
     }
   }
-  dynamic "network_acls" {
-    for_each = var.network_acls != null ? [var.network_acls] : []
-    content {
-      default_action = network_acls.value.default_action
-      ip_rules       = network_acls.value.ip_rules
 
+  network_acls {  
+      default_action = var.network_acls.default_action
+      ip_rules       = var.network_acls.ip_rules
       dynamic "virtual_network_rules" {
-        for_each = network_acls.value.virtual_network_rules != null ? network_acls.value.virtual_network_rules : []
+        for_each = var.network_acls.virtual_network_rules != null ? var.network_acls.virtual_network_rules : []
         content {
           subnet_id                            = virtual_network_rules.value.subnet_id
           ignore_missing_vnet_service_endpoint = virtual_network_rules.value.ignore_missing_vnet_service_endpoint
         }
       }
-    }
+
+    
   }
+
+
+
   dynamic "storage" {
     for_each = var.storage
     content {

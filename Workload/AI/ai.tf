@@ -11,9 +11,9 @@ module "cognitive_services" {
   existing_resource_group_name     = local.AI.cognitive_service.existing_resource_group_name
   existing_resource_group_location = local.AI.cognitive_service.existing_resource_group_location
 
-   providers = {
-    azurerm              = azurerm
-   }
+  providers = {
+    azurerm = azurerm
+  }
 }
 
 module "cognitive_search" {
@@ -27,7 +27,7 @@ module "cognitive_search" {
   sku                              = local.AI.cognitive_search.sku
   replica_count                    = local.AI.cognitive_search.replica_count
   partition_count                  = local.AI.cognitive_search.partition_count
-  
+
 }
 
 resource "azurerm_resource_group" "this" {
@@ -41,15 +41,23 @@ module "openai" {
 
   resource_group_name = azurerm_resource_group.this.name
   location            = local.location
-  private_endpoint    = local.AI.open_ai.private_endpoint
-  deployment          = local.AI.open_ai.deployment
-  public_network_access_enabled =false
-  sku_name ="S0"
+  //private_endpoint    = local.AI.open_ai.private_endpoint
+  deployment                    = local.AI.open_ai.deployment
+  public_network_access_enabled = true
 
-  providers = {
-    azurerm              = azurerm
-    azurerm.connectivity = azurerm
+  sku_name = "S0"
+
+  network_acls = {
+    default_action = "Deny"
+    ip_rules       = module.linux_web_app.app_service_outbound_ip_addresses
+    virtual_network_rules = [
+      {
+        subnet_id                            = lookup(module.vnet_ai.vnet_subnets_name_id, "snet_web")
+        ignore_missing_vnet_service_endpoint = true
+      }
+    ]
   }
+
   depends_on = [
     module.vnet_ai,
     azurerm_resource_group.this,
@@ -57,6 +65,27 @@ module "openai" {
 }
 
 
+module "private_endpoint_ai" {
+  source  = "andrewCluey/private-endpoint/azurerm"
+  version = "2.0.4"
+
+  location               = local.location
+  pe_resource_group_name = azurerm_resource_group.this.name
+  endpoint_resource_id   = module.openai.openai_id
+
+  pe_network = {
+    resource_group_name = azurerm_resource_group.network.name
+    vnet_name           = module.vnet_ai.vnet_name
+    subnet_name         = "snet_ai"
+  }
+
+  dns = {
+    zone_ids  = [var.open_ai_private_dns_zone_id]
+    zone_name = "privatelink.azurewebsites.net"
+  }
+
+  subresource_names = ["account"]
+}
 
 
 

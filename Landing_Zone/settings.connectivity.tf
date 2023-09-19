@@ -104,7 +104,7 @@ locals {
                 }
               }
             }
-            spoke_virtual_network_resource_ids      = ["/subscriptions/dbc37ac5-188c-42aa-9b19-f5a7a62236a6/resourceGroups/rg-network/providers/Microsoft.Network/virtualNetworks/vnet-ai-lz"]
+            spoke_virtual_network_resource_ids      = var.spoke_peerings
             enable_outbound_virtual_network_peering = true
             enable_hub_network_mesh_peering         = false
           }
@@ -238,4 +238,61 @@ locals {
     tags     = var.connectivity_resources_tags
 
   }
+
+  firewall_rule_collection_groups = {
+    landingzones = {
+      priority = 1000
+      network_rule_collections = {
+        network_rule_collections_1 = {
+          priority = 1000
+          action   = "Allow"
+          rules = {
+            allow_all_traffic = {
+              protocols             = ["Any"]
+              destination_ports     = ["*"]
+              destination_addresses = ["*"]
+              destination_ip_groups = null
+              destination_fqdns     = null
+              source_addresses      = ["*"]
+              source_ip_groups      = null
+            },
+
+          },
+
+        },
+
+      }
+      application_rule_collections = {
+        app_rule_collections_1 = {
+          priority = 1001
+          action   = "Allow"
+          rules = {
+            allow_all_traffic = {
+              protocols = {
+                "http" = {
+                  type = "Http"
+                  port = "80"
+                }
+
+                "httpS" = {
+                  type = "Https"
+                  port = "443"
+                }
+              }
+              destination_ports     = ["*"]
+              destination_addresses = ["*"]
+              destination_ip_groups = null
+              destination_fqdns     = ["*"]
+              source_addresses      = ["*"]
+              source_ip_groups      = null
+            },
+
+          },
+
+        },
+      }
+      nat_rule_collections = {}
+    }
+  }
+
 }

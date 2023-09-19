@@ -1,3 +1,5 @@
+/*
+
 # Private endpoint data dependencies 
 # Subnet where PE will be created 
 data "azurerm_subnet" "pe_subnet" {
@@ -26,3 +28,4 @@ data "azurerm_virtual_network" "vnet" {
 
 
 }
+*/

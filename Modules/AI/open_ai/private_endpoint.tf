@@ -1,4 +1,4 @@
-locals {
+/*locals {
   private_dns_zone_id   = length(var.private_endpoint) > 0 ? try(azurerm_private_dns_zone.dns_zone[0].id, data.azurerm_private_dns_zone.dns_zone[0].id) : null
   private_dns_zone_name = length(var.private_endpoint) > 0 ? try(azurerm_private_dns_zone.dns_zone[0].name, data.azurerm_private_dns_zone.dns_zone[0].name) : null
 }
@@ -93,3 +93,4 @@ resource "azurerm_private_dns_zone_virtual_network_link" "dns_zone_link_hub" {
   tags                  = local.tags
 }
 
+*/

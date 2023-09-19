@@ -4,6 +4,7 @@ terraform {
       source = "hashicorp/azurerm"
 
     }
+   
   }
 }
 
@@ -12,6 +13,4 @@ provider "azurerm" {
   skip_provider_registration = true
   subscription_id = local.ai_subscription
 }
-
-
 

@@ -58,3 +58,5 @@ variable "log_retention_in_days" {
 }
 
 variable "ai_lz_subscription"{}
+
+variable "spoke_peerings"{}

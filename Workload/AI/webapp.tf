@@ -39,7 +39,7 @@ module "private_endpoint" {
   }
 
   dns = {
-    zone_ids  = ["/subscriptions/8dfc81b4-9732-4b10-88ad-07cf9a644863/resourceGroups/es-dns/providers/Microsoft.Network/privateDnsZones/privatelink.azurewebsites.net"]
+    zone_ids  = [var.app_service_private_dns_zone_id]
     zone_name = "privatelink.azurewebsites.net"
   }
 
@@ -49,8 +49,8 @@ module "private_endpoint" {
 
 
 module "service_plan" {
-  source  = "claranet/app-service-plan/azurerm"
-  version = "6.2.0"
+    source = "../../Modules/Core/appservice"
+ 
 
   client_name         = "test"
   environment         = "test"
@@ -59,7 +59,7 @@ module "service_plan" {
   resource_group_name = azurerm_resource_group.rgai.name
   stack               = "stck"
 
-  logs_destinations_ids = ["/subscriptions/5fe15bcc-5275-4922-8181-217ee69e0e9b/resourceGroups/es-mgmt/providers/Microsoft.OperationalInsights/workspaces/es-la"]
+  #logs_destinations_ids = ["/subscriptions/5fe15bcc-5275-4922-8181-217ee69e0e9b/resourceGroups/es-mgmt/providers/Microsoft.OperationalInsights/workspaces/es-la"]
   os_type               = "Linux"
   sku_name              = "S1"
 }
@@ -78,16 +78,16 @@ module "linux_web_app" {
   service_plan_id = module.service_plan.service_plan_id
 
   app_settings = {
-    AZURE_COSMOSEDB_URI              = azurerm_cosmosdb_account.example.endpoint
-    AZURE_COSMOSEDB_KEY              = azurerm_cosmosdb_account.example.primary_key
-    AZURE_OPENAI_API_KEY             = module.openai.openai_primary_key
-    AZURE_OPENAI_API_INSTANCE_NAME   = module.openai.openai_name
+    AZURE_COSMOSDB_URI              = azurerm_cosmosdb_account.example.endpoint
+    AZURE_COSMOSDB_KEY              = azurerm_cosmosdb_account.example.primary_key
+    AZURE_OPENAI_API_KEY             = ""
+    AZURE_OPENAI_API_INSTANCE_NAME   = ""
     AZURE_OPENAI_API_DEPLOYMENT_NAME = local.AI.open_ai.deployment["gpt-35-turbo-16k"].model_name
-    AZURE_OPENAI_API_VERSION         = local.AI.open_ai.deployment["gpt-35-turbo-16k"].model_version
+    AZURE_OPENAI_API_VERSION         = "2023-07-01-preview"
     NEXTAUTH_SECRET                  = "openai-app$-{local.resourceToken}"
     ADMIN_EMAIL_ADDRESS              = "toto@microsoft.com"
-    AUTH_GITHUB_ID                   = "test"
-    AUTH_GITHUB_SECRET               = "test"
+    AUTH_GITHUB_ID                   = ""
+    AUTH_GITHUB_SECRET               = ""
     //NEXTAUTH_URL                                    = "https://openai-app-${random_string.resourceToken.result}.azurewebsites.net"
     APPINSIGHTS_PROFILERFEATURE_VERSION             = "1.0.0"
     APPINSIGHTS_SNAPSHOTFEATURE_VERSION             = "1.0.0"
@@ -126,7 +126,6 @@ module "linux_web_app" {
     }
   ]
 
-  vnet_integration      = false
-  logs_destinations_ids = ["/subscriptions/5fe15bcc-5275-4922-8181-217ee69e0e9b/resourceGroups/es-mgmt/providers/Microsoft.OperationalInsights/workspaces/es-la"]
+  vnet_integration      = false  
   depends_on            = [module.vnet_ai]
 }

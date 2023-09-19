@@ -23,7 +23,7 @@ locals {
         azurerm_automation_account = {
           management = {
 
-            location = "eastus" # replace value as needed
+            location = local.location # replace value as needed
           }
         }
       }

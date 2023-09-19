@@ -29,16 +29,16 @@ resource "azurerm_application_gateway" "appgateway" {
   }
   backend_address_pool {
     name  = "my-backend-pool"
-    fqdns = [trimsuffix(azurerm_private_dns_a_record.private_dns_a_record.fqdn, ".")] # Private IP of the APIM instance
+    fqdns = [trimsuffix(module.linux_web_app.app_service_default_site_hostname, ".")] 
   }
   backend_http_settings {
     name                  = "my-backend-http-settings"
     cookie_based_affinity = "Disabled"
     path                  = "/"
-    port                  = 80
-    protocol              = "Http"
+    port                  = 443
+    protocol              = "Https"
     request_timeout       = 20
-    probe_name            = "http_probe_test"
+    //probe_name            = "http_probe_test"
     pick_host_name_from_backend_address=true
   }
 
@@ -61,13 +61,13 @@ resource "azurerm_application_gateway" "appgateway" {
 
   waf_configuration {
     enabled          = true
-    firewall_mode    = "Prevention"
+    firewall_mode    = "Detection"
     rule_set_type    = "OWASP"
     rule_set_version = "3.0"
 
   }
 
-  probe {
+  /*probe {
     name                = "http_probe_test"
     host                = trimsuffix(azurerm_private_dns_a_record.private_dns_a_record.fqdn, ".")
     path                = "/test"
@@ -80,5 +80,5 @@ resource "azurerm_application_gateway" "appgateway" {
       status_code = ["100-999"]
       body        = ""
     }
-  }
+  }*/
 }

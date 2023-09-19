@@ -16,7 +16,3 @@ resource "azurerm_subnet_route_table_association" "example" {
   route_table_id = azurerm_route_table.rt-to-hub.id
 }
 
-output "test" {
-  description = "all the outputs of fonnectivity module"
-  value       = values(values(module.enterprise_scale.azurerm_subnet.connectivity)[2])[4]
-}
