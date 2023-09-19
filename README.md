@@ -12,6 +12,8 @@ This GitHub repository provides a comprehensive guide and Terraform configuratio
 
 ### Scenario: Secure Communication to Azure App Service via Private Link
 
+![Azure AI Landing Zone](AILZScenario1.png "Azure AI Landing Zone")
+
 In this scenario, the user deploys a standard landing zone architecture to ensure a well-organized and secure Azure environment. The architecture includes the following components and steps:
 
 * Standard Landing Zone: The deployment begins with setting up a standard Azure Landing Zone. This Landing Zone follows best practices and guidelines for organizing resources and aligning with security and compliance standards.
@@ -27,6 +29,8 @@ In this scenario, the user deploys a standard landing zone architecture to ensur
 * Overall, this architecture scenario emphasizes security and isolation by utilizing private endpoints, restricting access to internal networks, and carefully managing communication between the Azure App Service and Azure OpenAI. It allows users to securely access the web application within the Azure network while ensuring that external connections are controlled and protected.
 
 ### Scenario: Securely Exposing the Application with Application Gateway and WAF
+
+![Azure AI Landing Zone](AILZScenario2.png "Azure AI Landing Zone")
 
 In this scenario, you build upon the architecture from the first scenario to securely expose your application to external users. The key components and steps are as follows:
 
@@ -69,7 +73,7 @@ This architecture enhances the security of your web application by adding a laye
 ### Private DNS Zones Automation
 - Automates the deployment of private DNS zones, facilitating domain name resolution within the landing zone.
 - DNS Resolver deployed and integrated with Private DNS Zones for centralized DNS resolved from and to on prem and in azure as well.
-- 
+  
 ### DNS Policy Example
 - Demonstrates a policy example that automatically adds DNS entries to the private DNS zone for private endpoints in the hub.
 - Simplifies Private DNS management and configuration.
@@ -182,7 +186,8 @@ spoke_peerigns =["/subscriptions/abc37ac5-188c-42aa-9b19-f5a7a62236a6/resourceGr
 ### 4. Deploy Azure Chat Web App and configure it
 
 * You can fork this web app: https://github.com/FreddyAyala/azurechat and then using a similar github action you can deploy your webapp to the app service, be aware that for deployment you may need to temporarily allow public access to your web app, you can do this in the network tab of the deployed app service.
-   '''
+
+```
   name: Build & deploy Next.js app to Azure Web App
 
 # When this action will be executed
@@ -239,7 +244,6 @@ jobs:
         with:
           name: Nextjs-site
           path: ./site-deploy/Nextjs-site.zip
-
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -263,19 +267,19 @@ jobs:
 
       - name: 🧹 Cleanup
         run: rm ${{ github.workspace }}/Nextjs-site.zip
-'''
+```
 
 * Deploy this using the azure app service deployment center
 * Create an OAUTH App in github => https://github.com/settings/developers, you will have to note down the ClientID and create a Client secret.
 * In this OAuth app also configure the redirection URL of your application, if you want to test it from the bastion and private app, use the fqdn of the app service, otherwise for public access use the public IP of the APP GW. 
 * Then in the appp service update the following variables:
 
-  '''
+ ```
   AZURE_OPENAI_API_INSTANCE_NAME   = "azure-openai-582219"
   AZURE_OPENAI_API_KEY             = "your_key"
   AUTH_GITHUB_ID ="your_ids"
   AUTH_GITHUB_SECRET="your_secret"
-  '''
+  ```
 
  * Other values should be populated.
 Once you have done that you can test your application by authentication using github.
