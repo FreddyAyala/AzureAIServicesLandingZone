@@ -318,14 +318,14 @@ module "vnet_ai" {
       route_table = {
         id = azurerm_route_table.rt_web.id
       }
-      /*delegations = [
+      delegations = [
         {
           name = "Microsoft.Web/serverFarms"
           service_delegation = {
             name = "Microsoft.Web/serverFarms"
           }
         }
-      ]*/
+      ]
     }
 
     snet_database = {
