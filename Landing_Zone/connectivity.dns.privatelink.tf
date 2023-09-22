@@ -23,7 +23,7 @@ module "private_dns_link" {
   providers = {
     azurerm = "azurerm.connectivity"
   }
-
+depends_on = [module.connectivity  ]
 }
 
 
