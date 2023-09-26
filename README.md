@@ -151,7 +151,7 @@ email_security_contact    = "freddyayala@toto.com"
 log_retention_in_days     = 30
 management_resources_tags = {}
 scope_management_group    = "contoso corp"
-spoke_peerigns =["/subscriptions/abc37ac5-188c-42aa-9b19-f5a7a62236a6/resourceGroups/rg-network/providers/Microsoft.Network/virtualNetworks/vnet-ai-lz"] #Update this after deploying Spoke and then redeploy LZ
+spoke_peerings =["/subscriptions/abc37ac5-188c-42aa-9b19-f5a7a62236a6/resourceGroups/rg-network/providers/Microsoft.Network/virtualNetworks/vnet-ai-lz"] #Update this after deploying Spoke and then redeploy LZ
   ```
 
 ### 2. Initialize and Preview the Deployment
@@ -181,6 +181,7 @@ spoke_peerigns =["/subscriptions/abc37ac5-188c-42aa-9b19-f5a7a62236a6/resourceGr
   hub_dns_servers =["10.100.1.132","168.63.129.16"]
   open_ai_private_dns_zone_id="/subscriptions/adfc81b4-9732-4b10-88ad-07cf9a644863/resourceGroups/es-dns/providers/Microsoft.Network/privateDnsZones/privatelink.openai.azure.com"
   app_service_private_dns_zone_id="/subscriptions/adfc81b4-9732-4b10-88ad-07cf9a644863/resourceGroups/es-dns/providers/Microsoft.Network/privateDnsZones/privatelink.azurewebsites.net"
+  deploy_apim = false
 ```
 
 ### 4. Deploy Azure Chat Web App and configure it
