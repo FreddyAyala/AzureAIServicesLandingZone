@@ -4,6 +4,7 @@ resource "azurerm_resource_group" "cognitive" {
   provider = azurerm
 }
 module "cognitive_services" {
+  count = var.deploy_cognitive_services ? 1 : 0
   source                           = "../../Modules/AI/cognitive_services" # Replace this with the actual path to your module
   create_new_resource_group        = local.AI.cognitive_service.create_new_resource_group
   resource_group_name              = azurerm_resource_group.cognitive.name
@@ -85,6 +86,7 @@ module "private_endpoint_ai" {
   }
 
   subresource_names = ["account"]
+  depends_on = [ azurerm_resource_group.this ]
 }
 
 

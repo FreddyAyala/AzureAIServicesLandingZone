@@ -20,12 +20,6 @@ module "connectivity" {
 
 }
 
-
-output "test" {
-  description = "all the outputs of fonnectivity module"
-  value       = module.connectivity.test
-}
-
 module "core" {
   source = "./core"
 

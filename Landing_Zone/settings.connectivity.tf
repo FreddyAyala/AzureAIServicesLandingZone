@@ -98,7 +98,7 @@ locals {
                 threat_intelligence_mode      = ""
                 threat_intelligence_allowlist = []
                 availability_zones = {
-                  zone_1 = true
+                  zone_1 = false
                   zone_2 = false
                   zone_3 = false
                 }
@@ -161,9 +161,9 @@ locals {
             azure_synapse_analytics_dev          = true
             azure_synapse_analytics_sql          = true
             azure_synapse_studio                 = true
-            azure_web_apps_sites                 = true
+           
             azure_web_apps_static_sites          = true
-            cognitive_services_account           = true
+            
             microsoft_power_bi                   = true
             signalr                              = true
             signalr_webpubsub                    = true
@@ -171,10 +171,10 @@ locals {
             storage_account_file                 = true
             storage_account_queue                = true
             storage_account_table                = true
-            storage_account_web                  = true*/
-            cognitive_services_account = false
-            azure_key_vault            = true
-            //azure_open_ai   = true
+            storage_account_web                  = true
+            azure_web_apps_sites       = true
+            cognitive_services_account = true
+            azure_key_vault            = true            */
           }
           private_link_locations = [
             local.location

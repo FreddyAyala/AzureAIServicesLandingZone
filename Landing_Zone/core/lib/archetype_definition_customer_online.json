@@ -20,7 +20,8 @@
               "eastus2",
               "westus",
               "northcentralus",
-              "southcentralus"
+              "southcentralus",
+              "canadaeast"
             ]
           },
           "Deny-RSG-Locations": {
@@ -29,7 +30,8 @@
               "eastus2",
               "westus",
               "northcentralus",
-              "southcentralus"
+              "southcentralus",
+              "canadaeast"
             ]
           }
         },

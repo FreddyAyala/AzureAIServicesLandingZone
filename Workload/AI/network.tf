@@ -62,7 +62,7 @@ resource "azurerm_route_table" "rt_web" {
 resource "azurerm_network_security_group" "subnet_nsg" {
   name                = "nsg-apim"
   location            = local.location
-  resource_group_name = azurerm_resource_group.apim.name
+  resource_group_name =  azurerm_resource_group.network.name
 }
 
 
@@ -84,7 +84,7 @@ resource "azurerm_network_security_rule" "rule_stv2" {
   source_address_prefix       = "*"
   destination_address_prefix  = "Internet"
   description                 = "Client communication to API Management"
-  resource_group_name         = azurerm_resource_group.apim.name
+  resource_group_name         =  azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.subnet_nsg.name
 }
 
@@ -99,7 +99,7 @@ resource "azurerm_network_security_rule" "rule_stv3_1" {
   source_address_prefix       = "ApiManagement"  # Required source service tag
   destination_address_prefix  = "VirtualNetwork" # Required destination service tag
   description                 = "Management endpoint for Azure portal and PowerShell"
-  resource_group_name         = azurerm_resource_group.apim.name
+  resource_group_name         =  azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.subnet_nsg.name
 }
 
@@ -115,7 +115,7 @@ resource "azurerm_network_security_rule" "rule_lb" {
   source_address_prefix       = "*"
   destination_address_prefix  = "AzureLoadBalancer"
   description                 = "Azure Infrastructure Load Balancer"
-  resource_group_name         = azurerm_resource_group.apim.name
+  resource_group_name         =  azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.subnet_nsg.name
 }
 
@@ -131,7 +131,7 @@ resource "azurerm_network_security_rule" "rule_stv1" {
   source_address_prefix       = "*"
   destination_address_prefix  = "ApiManagement"
   description                 = "Management endpoint for Azure portal and PowerShell"
-  resource_group_name         = azurerm_resource_group.apim.name
+  resource_group_name         =  azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.subnet_nsg.name
 }
 
@@ -146,7 +146,7 @@ resource "azurerm_network_security_rule" "rule_stv3" {
   source_address_prefix       = "*"
   destination_address_prefix  = "ApiManagement"
   description                 = "Management endpoint for Azure portal and PowerShell"
-  resource_group_name         = azurerm_resource_group.apim.name
+  resource_group_name         =  azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.subnet_nsg.name
 }
 
@@ -162,7 +162,7 @@ resource "azurerm_network_security_rule" "rule_storage" {
   source_address_prefix       = "VirtualNetwork"
   destination_address_prefix  = "Storage"
   description                 = "Dependency on Azure Storage"
-  resource_group_name         = azurerm_resource_group.apim.name
+  resource_group_name         =  azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.subnet_nsg.name
 }
 
@@ -178,7 +178,7 @@ resource "azurerm_network_security_rule" "rule_sql" {
   source_address_prefix       = "VirtualNetwork"
   destination_address_prefix  = "SQL"
   description                 = "Access to Azure SQL endpoints"
-  resource_group_name         = azurerm_resource_group.apim.name
+  resource_group_name         =  azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.subnet_nsg.name
 }
 
@@ -194,7 +194,7 @@ resource "azurerm_network_security_rule" "rule_kv" {
   source_address_prefix       = "VirtualNetwork"
   destination_address_prefix  = "AzureKeyVault"
   description                 = "Access to Azure Key Vault"
-  resource_group_name         = azurerm_resource_group.apim.name
+  resource_group_name         =  azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.subnet_nsg.name
 }
 
@@ -203,14 +203,14 @@ resource "azurerm_network_security_rule" "rule_kv" {
 resource "azurerm_network_security_group" "subnet_nsg_std" {
   name                = "nsg-std"
   location            = local.location
-  resource_group_name = azurerm_resource_group.apim.name
+  resource_group_name =  azurerm_resource_group.network.name
 }
 #NSG APPGW
 
 resource "azurerm_network_security_group" "subnet_nsg_apgw" {
   name                = "nsg-appgw"
   location            = local.location
-  resource_group_name = azurerm_resource_group.apim.name
+  resource_group_name =  azurerm_resource_group.network.name
 }
 
 
@@ -225,7 +225,7 @@ resource "azurerm_network_security_rule" "http_inbound" {
   destination_port_range      = "80"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = azurerm_resource_group.apim.name
+  resource_group_name         =  azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.subnet_nsg_apgw.name
 }
 
@@ -240,7 +240,7 @@ resource "azurerm_network_security_rule" "https_inbound" {
   destination_port_range      = "443"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = azurerm_resource_group.apim.name
+  resource_group_name         =  azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.subnet_nsg_apgw.name
 }
 
@@ -254,31 +254,9 @@ resource "azurerm_network_security_rule" "allow_ag_ports" {
   destination_port_range      = "65200-65535"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = azurerm_resource_group.apim.name
+  resource_group_name         =  azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.subnet_nsg_apgw.name
 }
-
-
-/*resource "azurerm_subnet_network_security_group_association" "subnet_nsg_ai_assoc" {
-  subnet_id                 = lookup(module.vnet_ai.vnet_subnets_name_id, "snet_ai")
-  network_security_group_id = azurerm_network_security_group.subnet_nsg.id
-}
-
-resource "azurerm_subnet_network_security_group_association" "subnet_nsg_serv_assoc" {
-  subnet_id                 = lookup(module.vnet_ai.vnet_subnets_name_id, "snet_services")
-  network_security_group_id = azurerm_network_security_group.subnet_nsg.id
-}
-
-resource "azurerm_subnet_network_security_group_association" "subnet_nsg_db_assoc" {
-  subnet_id                 = lookup(module.vnet_ai.vnet_subnets_name_id, "snet_database")
-  network_security_group_id = azurerm_network_security_group.subnet_nsg.id
-}
-
-resource "azurerm_subnet_network_security_group_association" "subnet_nsg_ag_assoc" {
-  subnet_id                 = lookup(module.vnet_ai.vnet_subnets_name_id, "snet_ag")
-  network_security_group_id = azurerm_network_security_group.subnet_nsg.id
-}*/
-
 
 #VNET
 
@@ -329,7 +307,7 @@ module "vnet_ai" {
     }
 
     snet_database = {
-        network_security_group                        = { id = azurerm_network_security_group.subnet_nsg_std.id }
+      network_security_group                        = { id = azurerm_network_security_group.subnet_nsg_std.id }
       address_prefixes                              = local.Network.vnet-ai-lz.snet_database_address_prefixes
       service_endpoints                             = local.Network.vnet-ai-lz.snet_database_service_endpoints
       private_endpoint_network_policies_enabled     = true
@@ -344,7 +322,7 @@ module "vnet_ai" {
       service_endpoints                             = local.Network.vnet-ai-lz.snet_ai_service_endpoints
       private_endpoint_network_policies_enabled     = true
       private_link_service_network_policies_enabled = true
-        network_security_group                        = { id = azurerm_network_security_group.subnet_nsg_std.id }
+      network_security_group                        = { id = azurerm_network_security_group.subnet_nsg_std.id }
       route_table = {
         id = azurerm_route_table.spoke_to_hub.id
       }
@@ -353,7 +331,7 @@ module "vnet_ai" {
     snet_ag = {
       address_prefixes                              = local.Network.vnet-ai-lz.snet_ag_address_prefixes
       service_endpoints                             = local.Network.vnet-ai-lz.snet_ag_service_endpoints
-        network_security_group                        = { id = azurerm_network_security_group.subnet_nsg_apgw.id }
+      network_security_group                        = { id = azurerm_network_security_group.subnet_nsg_apgw.id }
       private_endpoint_network_policies_enabled     = true
       private_link_service_network_policies_enabled = true
 
@@ -367,10 +345,12 @@ module "vnet_ai" {
 }
 
 resource "azurerm_virtual_network_dns_servers" "vnet_dns_servers" {
+  count              = var.hub_dns_servers != "" && var.hub_dns_servers != null && var.hub_dns_servers != [] ? 1 : 0
   virtual_network_id = module.vnet_ai.vnet_id
   dns_servers        = var.hub_dns_servers
 }
 resource "azurerm_virtual_network_peering" "peering-ai-to-hub" {
+  count                        = var.hub_vnet_id != "" && var.hub_vnet_id != null ? 1 : 0
   name                         = "peering-ai-to-hub"
   resource_group_name          = azurerm_resource_group.network.name
   virtual_network_name         = local.Network.vnet-ai-lz.virtual_network_name

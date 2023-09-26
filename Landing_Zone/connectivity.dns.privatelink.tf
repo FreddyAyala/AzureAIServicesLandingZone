@@ -11,24 +11,16 @@ module "private_link_dns_integration" {
   providers = {
     azurerm = azurerm.connectivity
   }
+
 }
 
 
-module "private_dns_link" {
-  source              = "../Modules/Core/DNS/private-dns-vnet-link"
-  resource_group_name = module.connectivity.dns_resource_group_name
-  vnets_to_associate  = [values(values(module.connectivity.module.azurerm_virtual_network)[0])[0].id]
-  json_policies_file  = "${path.module}/private-zones.json"
-
-  providers = {
-    azurerm = "azurerm.connectivity"
-  }
-depends_on = [module.connectivity  ]
+resource "azurerm_private_dns_zone_virtual_network_link" "example" {
+  name                  = "open-ai-link"
+  resource_group_name   = module.connectivity.dns_resource_group_name
+  private_dns_zone_name = "privatelink.openai.azure.com"
+  virtual_network_id    = values(values(module.connectivity.module.azurerm_virtual_network)[0])[0].id
+  depends_on = [ module.private_link_dns_integration ]
+  provider =  azurerm.connectivity
+  
 }
-
-
-
-/*output "dns2" {
-  description = "all the outputs of connectivty module"
-  value       = module.connectivity.test2
-}*/

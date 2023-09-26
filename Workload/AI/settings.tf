@@ -59,8 +59,8 @@ locals {
 
   Hub_Values = {
 
-    hub_resource_group_name  = local.Network.hub_values[4]
-    hub_virtual_network_name = local.Network.hub_values[8]
+    hub_resource_group_name  = try(local.Network.hub_values[4],"")
+    hub_virtual_network_name = try(local.Network.hub_values[8],"")
   }
 
   hub_vnet_id = var.hub_vnet_id

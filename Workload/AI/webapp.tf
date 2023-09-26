@@ -56,6 +56,7 @@ module "linux_web_app" {
   stack               = "stck"
 
   service_plan_id = module.service_plan.service_plan_id
+  application_insights_enabled = false
 
   app_settings = {
 

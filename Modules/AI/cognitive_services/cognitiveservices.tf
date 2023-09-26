@@ -12,6 +12,7 @@ resource "azurerm_cognitive_account" "cognitive_service" {
   resource_group_name = var.create_new_resource_group ? azurerm_resource_group.rg[0].name : var.existing_resource_group_name
   sku_name            = var.sku
   kind                = "CognitiveServices"
+  depends_on = [ azurerm_resource_group.rg ]
 }
 
 output "resource_group_name" {

@@ -1,6 +1,6 @@
 resource "azurerm_public_ip" "example" {
   name                = "example-pip"
-  resource_group_name = azurerm_resource_group.apim.name
+  resource_group_name =  azurerm_resource_group.network.name
   location            = local.location
   allocation_method   = "Static"
   sku                 = "Standard"
@@ -8,7 +8,7 @@ resource "azurerm_public_ip" "example" {
 
 resource "azurerm_application_gateway" "appgateway" {
   name                = "apgw-ai-services"
-  resource_group_name = azurerm_resource_group.apim.name
+  resource_group_name =  azurerm_resource_group.network.name
   location            = local.location
   sku {
     name     = "WAF_v2"
