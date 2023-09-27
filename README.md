@@ -153,6 +153,16 @@ management_resources_tags = {}
 scope_management_group    = "contoso corp"
 spoke_peerings =["/subscriptions/abc37ac5-188c-42aa-9b19-f5a7a62236a6/resourceGroups/rg-network/providers/Microsoft.Network/virtualNetworks/vnet-ai-lz"] #Update this after deploying Spoke and then redeploy LZ
   ```
+ - VERY IMPORTANT: In the file settings.connectivity.tf Near line 196 you need to change this parameter to match your target region:
+
+```
+advanced = {
+      custom_settings_by_resource_type = {
+        azurerm_subnet = {
+          connectivity = {
+            canadaeast = {             # <=== UPDATE THIS replace with the location you are using
+              inboundsubnetdns = {
+```
 
 ### 2. Initialize and Preview the Deployment
 
@@ -280,7 +290,23 @@ jobs:
   AZURE_OPENAI_API_KEY             = "your_key"
   AUTH_GITHUB_ID ="your_ids"
   AUTH_GITHUB_SECRET="your_secret"
+  NEXTAUTH_URL ="your appgw public ip"
   ```
+## Gotchas and things to take into consideration
+
+-  You might need to restart the APP GW after deployment, since we are using a custom DNS, unless you do so your APP GW will not be able to resolve privatelink dns entries, you can use the following powershell script
+
+
+ ```
+# Get Azure Application Gateway
+$appgw=Get-AzApplicationGateway -Name <appgw_name> -ResourceGroupName <rg_name>
+
+# Stop the Azure Application Gateway
+Stop-AzApplicationGateway -ApplicationGateway $appgw
+
+# Start the Azure Application Gateway (optional)
+Start-AzApplicationGateway -ApplicationGateway $appgw
+ ```
 
  * Other values should be populated.
 Once you have done that you can test your application by authentication using github.
