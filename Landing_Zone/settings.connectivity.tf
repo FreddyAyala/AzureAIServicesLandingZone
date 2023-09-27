@@ -175,6 +175,7 @@ locals {
             azure_web_apps_sites       = true
             cognitive_services_account = true
             azure_key_vault            = true            */
+            cognitive_services_account = false
           }
           private_link_locations = [
             local.location
@@ -192,7 +193,7 @@ locals {
       custom_settings_by_resource_type = {
         azurerm_subnet = {
           connectivity = {
-            eastus = {             # replace eastus with the location you are using
+            canadaeast = {             # replace eastus with the location you are using
               inboundsubnetdns = { # replace subnet_name with the name of the subnet you want to configure and repeat this block for each subnet you need to configure
 
                 delegation = [ # add multiple entries to this list if multiple delegations are needed

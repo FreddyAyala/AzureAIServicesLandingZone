@@ -24,3 +24,13 @@ resource "azurerm_private_dns_zone_virtual_network_link" "example" {
   provider =  azurerm.connectivity
   
 }
+
+resource "azurerm_private_dns_zone_virtual_network_link" "cognitive" {
+  name                  = "cognitive-services-link"
+  resource_group_name   = module.connectivity.dns_resource_group_name
+  private_dns_zone_name = "privatelink.cognitiveservices.azure.com"
+  virtual_network_id    = values(values(module.connectivity.module.azurerm_virtual_network)[0])[0].id
+  depends_on = [ module.private_link_dns_integration ]
+  provider =  azurerm.connectivity
+  
+}
