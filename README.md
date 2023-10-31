@@ -292,6 +292,8 @@ jobs:
   AUTH_GITHUB_SECRET="your_secret"
   NEXTAUTH_URL ="your appgw public ip"
   ```
+An example of the callback url => http://<your app gw public ip endpoint>/api/auth/callback/github
+
 ## Gotchas and things to take into consideration
 
 -  You might need to restart the APP GW after deployment, since we are using a custom DNS, unless you do so your APP GW will not be able to resolve privatelink dns entries, you can use the following powershell script
